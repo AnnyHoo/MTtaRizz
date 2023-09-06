@@ -1,0 +1,43 @@
+public class ChristmasTree {
+    public static void main(String[] args) {
+        int levels = 6; // Змінна, що визначає кількість рівнів ялинки
+
+        // Викликаємо метод для виведення ялинки
+        printChristmasTree(levels);
+
+        // Викликаємо метод для створення та виведення двовимірного масиву
+        int[][] array = createAndPrintArray(levels);
+    }
+
+    // Метод для виведення ялинки з символів "*"
+    public static void printChristmasTree(int levels) {
+        for (int i = 0; i < levels; i++) {
+            // Додаємо пробіли перед зірочками
+            for (int j = 0; j < levels - i - 1; j++) {
+                System.out.print(" ");
+            }
+            // Виводимо зірочки
+            for (int k = 0; k < i + 1; k++) {
+                System.out.print("*");
+            }
+            System.out.println(); // Перехід на новий рядок
+        }
+    }
+
+    // Метод для створення та виведення двовимірного масиву
+    public static int[][] createAndPrintArray(int levels) {
+        int[][] array = new int[levels][levels];
+
+        int value = 1;
+        for (int i = 0; i < levels; i++) {
+            for (int j = 0; j < levels; j++) {
+                array[i][j] = value;
+                System.out.print(array[i][j] + " ");
+                value += 3;
+            }
+            System.out.println(); // Перехід на новий рядок
+        }
+
+        return array;
+    }
+}
