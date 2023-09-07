@@ -1,0 +1,172 @@
+import java.util.Scanner;
+
+public class TicTacToeGame {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Ласкаво просимо до гри Tic-Tac-Toe!");
+        System.out.print("Введiть розмiр iгрового поля (одина цифра): ");
+        int boardSize = scanner.nextInt();
+
+        TicTacToeBoard board = new TicTacToeBoard(boardSize);
+        Player player1 = new Player("Гравець 1", 'X');
+        Player player2 = new Player("Гравець 2", 'O');
+
+        Player currentPlayer = player1;
+        boolean gameWon = false;
+        int moves = 0;
+
+        while (!gameWon) {
+            board.displayBoard();
+            System.out.println(currentPlayer.getName() + ", твоя черга.");
+            int row = -1;
+            int col = -1;
+            boolean validInput = false;
+
+            while (!validInput) {
+                try {
+                    System.out.print("Введiть рядок та стовпчик (наприклад, 1 2): ");
+                    row = scanner.nextInt() - 1; // Налаштування для індекса на основі 0
+                    col = scanner.nextInt() - 1;
+                    validInput = true;
+
+                    if (row < 0 || row >= boardSize || col < 0 || col >= boardSize || !board.makeMove(row, col, currentPlayer.getSymbol())) {
+                        validInput = false;
+                        System.out.println("Невiрний ход, спробуй знову.");
+                    } else {
+                        moves++;
+                    }
+                } catch (java.util.InputMismatchException e) {
+                    System.out.println("Невiрний ввод. Введіть два числа роздiлених пробiлом.");
+                    scanner.nextLine(); 
+                }
+            }
+
+            gameWon = board.checkWin(currentPlayer.getSymbol());
+
+            if (!gameWon) {
+                if (moves == boardSize * boardSize) {
+                    // всі клітинки заповнено тому нічия
+                    board.displayBoard();
+                    System.out.println("Нiчия!");
+                    break;
+                }
+
+                currentPlayer = (currentPlayer == player1) ? player2 : player1; // зміна гравців
+            }
+        }
+
+        
+        if (gameWon) {
+            board.displayBoard();
+            System.out.println(currentPlayer.getName() + " виграв!");
+        }
+
+
+        scanner.close();
+    }
+}
+
+class TicTacToeBoard {
+    private char[][] board;
+    private int size;
+
+    public TicTacToeBoard(int size) {
+        this.size = size;
+        board = new char[size][size];
+        initializeBoard();
+    }
+
+    private void initializeBoard() {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                board[i][j] = ' ';
+            }
+        }
+    }
+
+    public void displayBoard() {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                System.out.print(board[i][j]);
+                if (j < size - 1) {
+                    System.out.print(" | ");
+                }
+            }
+            System.out.println();
+            if (i < size - 1) {
+                System.out.println("---------");
+            }
+        }
+    }
+
+    public boolean makeMove(int row, int col, char playerSymbol) {
+        if (row >= 0 && row < size && col >= 0 && col < size && board[row][col] == ' ') {
+            board[row][col] = playerSymbol;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkWin(char playerSymbol) {
+        for (int i = 0; i < size; i++) {
+            if (checkRowWin(i, playerSymbol) || checkColumnWin(i, playerSymbol)) {
+                return true;
+            }
+        }
+
+        return checkDiagonalWin(playerSymbol);
+    }
+
+    private boolean checkRowWin(int row, char playerSymbol) {
+        for (int i = 0; i < size; i++) {
+            if (board[row][i] != playerSymbol) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkColumnWin(int col, char playerSymbol) {
+        for (int i = 0; i < size; i++) {
+            if (board[i][col] != playerSymbol) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkDiagonalWin(char playerSymbol) {
+        boolean mainDiagonal = true;
+        boolean antiDiagonal = true;
+
+        for (int i = 0; i < size; i++) {
+            if (board[i][i] != playerSymbol) {
+                mainDiagonal = false;
+            }
+            if (board[i][size - 1 - i] != playerSymbol) {
+                antiDiagonal = false;
+            }
+        }
+
+        return mainDiagonal || antiDiagonal;
+    }
+}
+
+class Player {
+    private String name;
+    private char symbol;
+
+    public Player(String name, char symbol) {
+        this.name = name;
+        this.symbol = symbol;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public char getSymbol() {
+        return symbol;
+    }
+}
